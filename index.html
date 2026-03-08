@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>C einfach erklärt</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#121a33; --text:#e8ecff; --muted:#b8c1ff;
+      --accent:#7aa2ff; --accent2:#67e8f9; --border:rgba(255,255,255,.12);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(122,162,255,.25), transparent 55%),
+                  radial-gradient(900px 600px at 90% 10%, rgba(103,232,249,.18), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.55;
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(11,16,32,.75);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{max-width:1050px; margin:0 auto; padding:0 18px}
+    .topbar{display:flex; gap:14px; align-items:center; justify-content:space-between; padding:14px 0}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: var(--shadow);
+    }
+    .brand h1{font-size:16px; margin:0}
+    .brand p{margin:0; font-size:12px; color:var(--muted)}
+
+    nav{
+      display:flex; flex-wrap:wrap; gap:10px;
+      justify-content:flex-end;
+    }
+    nav a{
+      font-size:13px;
+      padding:8px 10px;
+      border:1px solid transparent;
+      border-radius:999px;
+      color:var(--text);
+      opacity:.9;
+    }
+    nav a:hover{border-color:var(--border); background:rgba(255,255,255,.05)}
+
+    main{padding:28px 0 60px}
+
+    .hero{
+      display:grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap:18px;
+      align-items:stretch;
+      margin-top:8px;
+    }
+    .card{
+      background:rgba(18,26,51,.9);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero .card{padding:20px}
+    .hero h2{margin:0 0 8px; font-size:28px; letter-spacing:.2px}
+    .hero p{margin:0; color:var(--muted)}
+
+    .facts{padding:18px}
+    .facts h3{margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
+    .pill{
+      display:inline-block;
+      padding:7px 10px;
+      margin:6px 6px 0 0;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      font-size:13px;
+    }
+
+    section{margin-top:18px}
+    section .card{padding:20px}
+    section h3{margin:0 0 10px; font-size:18px}
+    section p{margin:10px 0; color:var(--muted)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:18px;
+      margin-top:18px;
+    }
+    .col-7{grid-column: span 7}
+    .col-5{grid-column: span 5}
+    .col-12{grid-column: span 12}
+
+    .callout{
+      border-left:4px solid var(--accent);
+      padding:10px 12px;
+      background:rgba(122,162,255,.08);
+      border-radius:14px;
+      color:var(--text);
+      margin:12px 0;
+    }
+
+    pre{
+      margin:12px 0;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.28);
+      overflow:auto;
+    }
+    code{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:13px}
+
+    details{margin-top:10px; border:1px solid var(--border); border-radius:14px; padding:12px; background:rgba(255,255,255,.03)}
+    summary{cursor:pointer; font-weight:600}
+
+    footer{
+      padding:26px 0 40px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .small{font-size:13px; color:var(--muted)}
+
+    @media (max-width: 900px){
+      .hero{grid-template-columns:1fr}
+      .col-7,.col-5,.col-12{grid-column: span 12}
+      nav{justify-content:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>C einfach erklärt</h1>
+            <p>Mini-Website für den Schulinformatikkurs</p>
+          </div>
+        </div>
+        <nav aria-label="Seitennavigation">
+          <a href="#start">Start</a>
+          <a href="#grundideen">Grundideen</a>
+          <a href="#ein-ausgabe">Ein-/Ausgabe</a>
+          <a href="#variablen">Variablen</a>
+          <a href="#kontroll">If/Else</a>
+          <a href="#schleifen">Schleifen</a>
+          <a href="#arrays">Arrays</a>
+          <a href="#mini">Mini-Check</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero" id="start">
+      <div class="card">
+        <h2>Was ist C?</h2>
+        <p>
+          <strong>C</strong> ist eine Programmiersprache, mit der man dem Computer <em>genaue Anweisungen</em> gibt.
+          Viele wichtige Dinge wurden (oder werden) mit C gebaut, zum Beispiel Teile von Betriebssystemen oder Software für Geräte.
+        </p>
+        <div class="callout">
+          Denk dir Programmieren wie eine Wegbeschreibung: Du sagst jemandem "Geh 10 Meter rechts und danach 50 Meter Links und dann bist du am Ziel" Wenn du ihm die falschen Angaben gibst, verläuft er sich und kommt nicht zum Ziel.
+        </div>
+        <p class="small">
+          Diese Seite erklärt nur die Grundlagen: Ein/Ausgabe, Variablen, If/Else, Schleifen, Arrays. Alles mit einfachen Beispielen.
+        </p>
+      </div>
+
+      <aside class="card facts" aria-label="Kurzfakten">
+        <h3>Kurzfakten</h3>
+        <span class="pill">Startpunkt: <code>main</code></span>
+        <span class="pill">Text ausgeben: <code>printf</code></span>
+        <span class="pill">Eingabe lesen: <code>scanf</code></span>
+        <span class="pill">Bedingung: <code>if / else</code></span>
+        <span class="pill">Wiederholen: <code>for</code></span>
+        <span class="pill">Listen: Arrays</span>
+      </aside>
+    </div>
+
+    <section id="grundideen" class="grid">
+      <div class="card col-12">
+        <h3>Grundideen</h3>
+        <p>
+          Wenn du nur diese Ideen verstehst, bist du schon weit:
+        </p>
+        <ul>
+          <li><strong>Ein-/Ausgabe:</strong> Der Computer kann Text zeigen (<code>printf</code>) und Eingaben lesen (<code>scanf</code>).</li>
+          <li><strong>Variablen:</strong> Ein "Behälter", in der ein Wert gespeichert wird (z. B. eine Zahl oder ein Buchstabe).</li>
+          <li><strong>Datentypen:</strong> Welche Art von Wert in der Box liegt (z. B. <code>int</code>, <code>float</code>, <code>char</code>).</li>
+          <li><strong>Kontrollstrukturen:</strong> Entscheidungen treffen: „Wenn das stimmt, dann … sonst …“ (<code>if/else</code>).</li>
+          <li><strong>Schleifen:</strong> Wiederholen: „Mach das 10-mal“ (<code>for</code>).</li>
+          <li><strong>Arrays:</strong> Mehrere Werte unter einem Namen speichern (wie eine Liste).</li>
+        </ul>
+        <details>
+          <summary>Mini-Spickzettel: So liest man C-Code</summary>
+          <ul>
+            <li><code>;</code> beendet eine Anweisung (wie ein Punkt am Satzende).</li>
+            <li><code>{ }</code> fasst mehrere Anweisungen zu einem Block zusammen.</li>
+            <li><code>"Text"</code> ist ein String (Text in Anführungszeichen).</li>
+            <li><code>//</code> Ist ein Kommentar. Wird vom Computer ignoriert. Ein Kommentar ist nur für den Programmierer oder leser. </li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <section id="ein-ausgabe" class="grid">
+      <div class="card col-7">
+        <h3>1) Ein- und Ausgabe</h3>
+        <p>
+          <code>printf</code> zeigt Text auf dem Bildschirm. <br />
+          <code>scanf</code> liest eine Eingabe ein (z. B. was jemand tippt).
+        </p>
+        <div class="callout">
+        <strong>printf = raus</strong>, <strong>scanf = rein</strong>
+        </div>
+        <p>Beispiel: „Gib deinen Namen ein“ das Programm gibt ihn wieder aus.</p>
+        <p>Dieses Beispiel ist oft beim Registrieren zu beobachten. Man macht und ein neues Konto und man wird mit dem Namen begrüßt, den man eingegeben hat.</p>
+        <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    char name[50];  // man erstell eine Variable mit dem Datentyp char.
+                    // die Variable heißt "name" und kann 
+
+    printf("Gib deinen Namen ein: ");
+    scanf("%s", name);   // liest das Wort und schreibt es oben in der Variable
+
+    printf("Hallo, %s!\n", name);     // Text in Anführungszeichen wird dem User gezeigt
+    return 0;
+} // Code von Mustafa
+</code></pre>
+        <p class="small">
+          Hinweis: Dieses Beispiel liest nur <em>ein Wort</em>. Mehrere Wörter (z. B. Vor- und Nachname) geht auch, ist aber etwas extra.
+        </p>
+      </div>
+      <div class="card col-5">
+        <h3>Was bedeuten die Zeichen?</h3>
+        <ul>
+          <li><code>%s</code> steht für „Text“ (String).</li>
+          <li><code>\n</code> bedeutet „neue Zeile“.</li>
+          <li><code>char name[50]</code> = Platz für bis zu 49 Zeichen (plus Endezeichen).</li>
+          <li><code>return 0;</code> bedeutet, dass diese Funktion erfolgreich bis zum Ende ausgeführt wurde. <code>return 1;</code> oder andere ziffern bedeutet, die Funktion wurde nicht erfolgreich ausgeführt.</li>
+        </ul>
+        <details>
+          <summary>Typischer Fehler</summary>
+          <p class="small">
+            Wenn man bei <code>scanf</code> falsche Platzhalter benutzt (z. B. <code>%d</code> statt <code>%s</code>), bricht das Programm ab.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <section id="variablen" class="grid">
+      <div class="card col-7">
+        <h3>2) Variablen und Datentypen</h3>
+        <p>
+          Eine <strong>Variable</strong> ist eine Box mit einem Namen, in der ein Wert gespeichert wird.
+        </p>
+        <ul>
+          <li><code>int</code> = ganze Zahl (z. B. 5, -2)</li>
+          <li><code>float</code> = Zahl mit Komma (z. B. 3.14)</li>
+          <li><code>char</code> = einzelnes Zeichen (z. B. 'A')</li>
+        </ul>
+        <p>Beispiel: Zwei Zahlen addieren.</p>
+        <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int a, b;     2 Variablen des Datentyps intger mit dem Namen a und b.
+
+    printf("Zahl 1: ");
+    scanf("%d", &a);
+
+    printf("Zahl 2: ");
+    scanf("%d", &b);
+
+    printf("Summe: %d\n", a + b);
+    return 0;
+} // Code von Mustafa
+</code></pre>
+      </div>
+      <div class="card col-5">
+        <h3>Warum steht da <code>&amp;a</code>?</h3>
+        <p class="small">
+          Für Anfänger reicht: <code>scanf</code> braucht bei Zahlen das <code>&amp;</code>, damit es den Wert richtig „eintragen“ kann.
+        </p>
+        <details>
+          <summary>Erklärung</summary>
+          <p class="small">
+            Bei <code>scanf</code> für Zahlen fast immer: <code>&amp;variable</code>.
+          </p>
+          <p><code>&amp;</code> zeigt auf die Adresse der Variable im Speicher</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="kontroll" class="grid">
+      <div class="card col-7">
+        <h3>3) Kontrollstrukturen: if und else</h3>
+        <p>
+          <strong>if</strong> bedeutet: „Wenn das stimmt, dann …“ <br />
+          <strong>else</strong> bedeutet: „Sonst …“
+        </p>
+        <p>Beispiel: Prüfen, ob eine Zahl positiv oder negativ ist.</p>
+        <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int x;    Eine Variable des Datentyps int mti dem Namen x.
+    printf("Gib eine Zahl ein: ");
+    scanf("%d", &x);
+
+    if (x > 0) {
+        printf("Die Zahl ist positiv.\n");
+    } 
+    else if (x == 0) {
+        printf("Die Zahl ist 0.\n");
+    }
+    else {
+        printf("Die Zahl ist negativ.\n");
+    }
+     return 0;
+} // Code von Mustafa
+</code></pre>
+      </div>
+      <div class="card col-5">
+        <h3>Wichtig</h3>
+        <ul>
+          <li><code>&gt;</code> bedeutet „größer als“</li>
+          <li><code>&gt;=</code> bedeutet „größer oder gleich“</li>
+          <li><code>==</code> bedeutet „gleich“ (nicht <code>=</code>!)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="schleifen" class="grid">
+      <div class="card col-7">
+        <h3>4) Schleifen: for</h3>
+        <p>
+          Eine <strong>for-Schleife</strong> wiederholt etwas, z. B. „drucke Zahlen von 1 bis 10“.
+        </p>
+        <p>Beispiel: Zahlen von 1 bis 10 ausgeben.</p>
+        <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int i;
+    for (i = 1; i &lt;= 10; i++) {
+        printf("%d\n", i);
+    }
+    return 0;
+} // Code von Mustafa 
+</code></pre>
+      </div>
+      <div class="card col-5">
+        <h3>Wie liest man das?</h3>
+        <ol>
+          <li><code>i = 1</code> → starte bei 1</li>
+          <li><code>i &lt;= 10</code> → solange i ≤ 10</li>
+          <li><code>i++</code> → i wird jedes Mal um 1 größer</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="arrays" class="grid">
+      <div class="card col-7">
+        <h3>5) Arrays</h3>
+        <p>
+          Ein <strong>Array</strong> ist wie eine kleine Liste: mehrere Werte unter einem Namen.
+        </p>
+        <p>Beispiel: Drei Noten speichern und den Durchschnitt berechnen.</p>
+        <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    float punkte[3];
+
+    printf("Note 1: ");
+    scanf("%f", &punkte[0]);
+
+    printf("Note 2: ");
+    scanf("%f", &punkte[1]);
+
+    printf("Note 3: ");
+    scanf("%f", &punkte[2]);
+
+    float durchschnitt = (punkte[0] + punkte[1] + punkte[2]) / 3;
+    printf("Durchschnitt: %.2f\n", durchschnitt);
+
+    return 0;
+} // Code von Mustafa
+</code></pre>
+      </div>
+      <div class="card col-5">
+        <h3>Wichtige Idee</h3>
+        <p class="small">
+          Bei Arrays beginnt das Zählen bei <strong>0</strong>:
+        </p>
+        <ul>
+          <li><code>noten[0]</code> = erstes Element</li>
+          <li><code>noten[1]</code> = zweites Element</li>
+          <li><code>noten[2]</code> = drittes Element</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="mini" class="grid">
+      <div class="card col-12">
+        <h3>Mini-Check</h3>
+        <p>
+          Wenn du diese Fragen grob beantworten kannst, dann hast du es verstanden:
+        </p>
+        <ol>
+          <li>Wofür ist <code>printf</code> da?</li>
+          <li>Was ist eine Variable?</li>
+          <li>Was macht <code>if/else</code>?</li>
+          <li>Wofür nutzt man eine <code>for</code>-Schleife?</li>
+          <li>Was ist ein Array?</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p class="small">
+        Hinweis: Die Codebeispiele sind absichtlich kurz und „schulfreundlich“ gehalten.
+      </p>
+      <p>Ich kann meinen Code bei Bedarf gerne teilen und auch kurz zeigen, wie man die Website startet und zum Laufen bringt.</p>
+    </div>
+  </footer>
+   <footer class="credits">
+  <p><strong>Name:</strong> Mustafa Hab Ruman</p>
+  <p><strong>Lehrerin:</strong> Fr. Äckersberg</p>
+  <p><strong>Klasse:</strong> 13BG03</p>
+</footer>
+</body>
+</html>
